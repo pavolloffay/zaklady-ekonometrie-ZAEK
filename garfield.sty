@@ -1,0 +1,79 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Styl pro sablonu pro projekty ekonometrickych predmetu                                            %%%
+% Vytvoreno v ramci grantu: Ekonometricke nastroje a techniky v realnych ekonomickych aplikacich    %%%
+% Autor: Jakub Bucek (jakubbucek@mail.muni.cz)                                                      %%%
+% Pripominky, dotazy, namety smerujte na diskusni forum: https://is.muni.cz/auth/df/sablona-prif    %%%
+% Vytvoreno: 1.9.2014                                                                               %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\filename{garfield.sty}
+\def\filedate{2014/11/01}
+\def\fileversion{1.0}
+
+\usepackage[a4paper,twoside,top=25mm,bottom=25mm,left=25mm,right=25mm,headsep=17pt,footskip=13.5mm]{geometry} %% nastaveni velikosti stranky
+
+\usepackage{xcolor} %% vice barev
+\usepackage{graphicx} %% vkladani obrazku
+\usepackage{hyperref} %% klikatelne odkazy
+\definecolor{Odkazy}{HTML}{005555}
+\hypersetup{colorlinks=true, linkcolor=Odkazy,urlcolor=Odkazy, citecolor=Odkazy}
+
+\usepackage{enumitem} %% mensi mezery v listech
+\setlist{nosep}
+
+\parskip=6pt plus 1pt
+\renewcommand{\arraystretch}{1.3}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEFINICE PROMĚNNÝCH %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\NazevPrace}[1]{\newcommand{\Nazev}{#1}}
+\newcommand{\Autor}[1]{\newcommand{\Jmeno}{#1}}
+\newcommand{\Univerzita}[1]{\newcommand{\Instituce}{#1}}
+\newcommand{\Fakulta}[1]{\newcommand{\Faculty}{#1}}
+\newcommand{\Obor}[1]{\newcommand{\Field}{#1}}
+\newcommand{\Mail}[1]{\newcommand{\Kontakt}{#1}}
+\newcommand{\DatumOdevzdani}[1]{\newcommand{\Datum}{#1}}
+\newcommand{\Abstrakt}[1]{\newcommand{\Abstract}{#1}}
+\newcommand{\KlicovaSlova}[1]{\newcommand{\Keywords}{#1}}
+\newcommand{\JELklasifikace}[1]{\newcommand{\JEL}{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PREDDEFINOVANE FUNKCE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Cbb}{\mathbb{C}} 
+\newcommand{\Rbb}{\mathbb{R}}
+\newcommand{\Zbb}{\mathbb{Z}}
+\newcommand{\Nbb}{\mathbb{N}}
+
+\newcommand{\e}[1]{\text{e}^{#1}}
+\newcommand{\dif}[1]{\text{d}#1}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\sgn}{sgn}
+\newcommand{\E}[1]{\text{E}\left( #1 \right)}
+\newcommand{\Var}[1]{\text{Var}\left( #1 \right)}
+\newcommand{\Cov}[2]{\text{Cov}\left( #1, #2 \right)}
+\newcommand{\Cor}[2]{\text{Cor}\left( #1, #2 \right)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TITULNI STRANA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\VytvorTitulniStranu}{
+\newpage
+\null
+  \vskip 2em%
+  \begin{center}
+    {\LARGE\bfseries \Nazev \par}%
+    {\large \Jmeno\footnote{\Instituce , \Faculty , obor: \Field , \Kontakt } \par}%
+    \Datum \par %
+    \parskip=10pt
+    \begin{minipage}{12cm}
+      \parindent=6pt \parskip=6pt
+      {\bfseries\noindent Abstrakt:} \Abstract \par
+
+    {\bfseries\noindent Kľúčové slová:} \Keywords\par
+    {\bfseries\noindent JEL klasifikácia:} \JEL \par
+    \end{minipage}
+  \end{center}
+}
