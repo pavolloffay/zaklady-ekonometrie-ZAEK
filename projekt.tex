@@ -224,19 +224,89 @@ V tejto práci sme zvolili Akaikeho informačné kritérium:
     A(k,l) = AIC(k,l) = ln\hat{\sigma}^{2}_{k,l} + \frac{2(k+l+1)}{n}
 \end{eqnarray}
 
-Ako je vidieť z \ref{rov:aic} kritérium prenalizuje veľké rády k a l. 
-$\hat{\sigma}^{2}_{k,l}$ je smerodajná odchylka reziduí.
+Z rovnice \ref{rov:aic} je zrejmé, že kritérium penalizuje veľké rády k a l. 
+$\hat{\sigma}^{2}_{k,l}$ je smerodajná odchylka reziduí modelu. 
+Poďme si vypísať niekoľko kandidátov ARIMA modelov pomocu príkazu auto.arima().
 
-\section{Ekonomický model}
+\begin{minipage}{\linewidth}
+\begingroup
+\fontsize{9pt}{7pt}\selectfont
+\begin{verbatim}
+> auto.arima(as.numeric(df$avg), approximation=FALSE, trace=TRUE, ic='aic', allowdrift=FALSE)
+ ARIMA(2,1,2)                    : 7556.055
+ ARIMA(0,1,0)                    : 7696.058
+ ARIMA(1,1,0)                    : 7651.407
+ ARIMA(0,1,1)                    : 7557.045
+ ARIMA(1,1,2)                    : 7560.654
+ ARIMA(3,1,2)                    : 7557.714
+ ARIMA(2,1,1)                    : 7553.937
+ ARIMA(1,1,1)                    : 7557.937
+ ARIMA(3,1,1)                    : 7555.879
+ ARIMA(2,1,0)                    : 7613.902
 
-\section{Ekonometrický model}
+ Best model: ARIMA(2,1,1)                    
+Series: as.numeric(df$avg) 
+ARIMA(2,1,1)                    
+Coefficients:
+          ar1      ar2      ma1
+      -0.0985  -0.1774  -0.9441
+s.e.   0.0716   0.0716   0.0199
+\end{verbatim}
+\endgroup
+\end{minipage}
 
-\section{Odhadnutý model}
+Ako je vidieť funkcia zvolila model ARIMA(2,1,1) ktorého AIC kritérium bolo najnižšie.
+Odhadnutý model môžeme zapísať v tvare:
+\begin{eqnarray} \label{rov:arima_model}
+    Y_t = -0.985 Y_{t-1} - 0.1774 Y_{t-2} -0.9441\epsilon_{t-1} + \epsilon_{t}
+\end{eqnarray}
 
-\section{Interpretace výsledků}
+Takto sme ukázali, že je možné konštrulovať ARIMA model aj analytickým spôsobom. 
+Chcel by som avšak poznanenať, že voľbu modelu je lepšie nechať na overený štatistický
+softvér. 
+
+Po úspšnom odhade rádu modelu je by som chcel zmieniť ako sa počítajú jednotlivé
+koeficienty. Pre AR model platí, že sa dajú vypočítať pomocou OLS alebo Yule\,--\,Walkerových
+rovníc \cite{brockwell_ts}. Výpočet kofeicientov MA modelu je zložitejší a je možný pomocou rekurzívnej Levison-Durbin 
+metódy. Odhadom presných parametrov modelu sa v tejto práci ďalej zaoberať.  
+
+Na záver sa pozrieme na rezíduá odhadnutého modelu. Ak sme postupovali správne rezíduá by
+mali pripomínať biely šum a nemali by byť medzi sebou korelované (inakšie by sme ich
+vedeli modelovať). Toto tvrdenie si overíme Ljung\,--\,Box testom, ktorého nulová hypotéza
+hovorí o tom, že sú dáta nezávislé distribuované. Z grafu \ref{obr:ljung} môžeme
+prehlásiť, že nulovú hypotézu na hladine významnosti 0.05 nezamietame.
+
+Na následujúcich grafoch si vykresíme rezíduá, ich autokorelačnú funkciu a p-hodnoty
+pre rôzdne opozdenia Ljung\,--\,Box testu.
+
+
+\begin{figure}[!tbo] \centering
+    \begin{subfigure}[b]{0.55\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth,height=5cm]{images/heap_resid.pdf}
+%        \caption{}
+        \label{obr:heap_resid_resid}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.55\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth,height=5cm]{images/heap_box.pdf}
+%        \caption{}
+        \label{obr:heap_resid_ljung}
+    \end{subfigure}
+    \caption{Rezíduá odhadnutého ARIMA modelu.}
+    \label{obr:heap_resid}
+\end{figure}
+
+\begin{figure}[htb] \centering
+    \includegraphics[width=.8\textwidth]{images/heap_forecast.pdf}
+    \caption{Predikcia na 20 krokov do predu.}
+    \label{obr:heap_forecast}
+\end{figure}
+
+
+
 
 \section{Záver}
-\cite{cipra}
 
 \section*{Poďakovanie}
 Na záver by som chcel poďakovať Ing. Danielovi Němcovi, Ph.D. za návrh na vypracovanie
@@ -254,7 +324,11 @@ tejto témi a za veľmi príjemné a užitočné konzultácie. Ďalej by som chc
 \setcounter{page}{1}
 
 \section{Prílohy}
-\label{priloha}
+
+\begin{itemize}
+    \item Skript v jazyku R
+    \item Zdrojový text tejto správy v \LaTeX\,--\,e
+\end{itemize}
 
 \end{document}
 
