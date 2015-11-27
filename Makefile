@@ -5,7 +5,9 @@ all: pdf
 
 pdf: $(NAME).tex $(BIB).bib
 	pdflatex $<
+	pdflatex $<
 	bibtex $(NAME)
+	pdflatex $<
 	pdflatex $<
 	pdflatex $<
 

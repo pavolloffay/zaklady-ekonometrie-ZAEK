@@ -17,7 +17,7 @@
 \usepackage[slovak]{babel}
 
 \usepackage{subcaption}
-%\usepackage{subfig}
+\usepackage{float}
 
 %% Fonty
 \usepackage{mathptmx}  %% volne dostupny font Adobe Times Roman
@@ -46,6 +46,24 @@
 \theoremstyle{remark}
 \newtheorem*{pozn}{Poznámka}
 \numberwithin{equation}{section}
+
+
+\usepackage{xparse}
+  \NewDocumentCommand{\INTERVALINNARDS}{ m m }{
+      #1 {,} #2
+ }
+
+\NewDocumentCommand{\interval}{ s m >{\SplitArgument{1}{,}}m m o }{
+      \IfBooleanTF{#1}{
+          \left#2 \INTERVALINNARDS #3 \right#4
+      }{
+          \IfValueTF{#5}{
+              #5{#2} \INTERVALINNARDS #3 #5{#4}
+          }{
+              #2 \INTERVALINNARDS #3 #4
+          }
+      }
+  }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TITULNI STRANA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -82,29 +100,29 @@ monitorovacích systémov dokáže upozorniť administrátora na vyťaženie pri
 hraničnej hodnoty. V monitorovacom systéme Hawkular je možné zapnúť predikciu, takže
 administrátor bude upozornený vopred ak by náhodov malo dôjsť k prekročeniu spomenutej
 hraničnej hodnoty. Použíté modely časových rád v systéme Hawkular sú varianty
-exponenciálneho vyrovnania. Modely ARIMA nemohli byť použité z dôvodu nestacionarity dát 
+exponenciálneho vyrovnania. Modely \emph{ARIMA} nemohli byť použité z dôvodu nestacionarity dát 
 a náročnosti na výpočet\,--\,systém je schopný analyzovať aj niekoľko tisíc model naraz. 
 
-V tejto práci sa zameriam na konštrukciu optimálneho ARIMA modelu, ktorý následne porovnám
+V tejto práci sa zameriam na konštrukciu optimálneho \emph{ARIMA} modelu, ktorý následne porovnám
 s exponenciálnym vyrovnaním konkrétne Holtovou metódou s linárnym trendom.
 
-\section{Analýza Java Heap metriky}
-V tejto kapitole budeme analyzovať časovú radu, ktorá popisuje vyťaženosť Java heap-u v
-čase.
+\section{Identifikácia ARIMA modelu}
+V tejto kapitole budeme analyticky identifikovať najvhodnejší \emph{ARIMA} model, ktorý následne 
+porovnáme s výsledom funkcie \emph{auto.arima}.
 
-Graf časovej rady:
-\begin{figure}[htb] \centering
-    \includegraphics[width=.8\textwidth]{images/heap_series.pdf}
-    \caption{Vyťaženosť Java Heap-u v čase.}
-    \label{obr:heap} % unikatni navesti, pomoci ktereho se budeme v textu odvolavat na dany obrazek
+Začneme vykreslením časovej rady. Na obrázku \ref{obr:heap} je možné vidieť, že časová rada 
+obsahuje mierny lineárny trend, čo indikuje nestacionaritu. Vykresíme autokorelačnú 
+(zkrátene \emph{ACF}) a parciálknu autokorelačnú funkciu (zkrátene \emph{PACF}).
+
+\begin{figure}[H] 
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{images/heap_series.pdf}
+        \caption{Vyťaženosť Java Heap-u v čase.}
+        \label{obr:heap} % unikatni navesti, pomoci ktereho se budeme v textu odvolavat na dany obrazek
+    \end{center}
 \end{figure}
 
-\subsection{Identifikácia ARIMA modelu}
-Z obrázka \ref{obr:heap} je možné usúdiť, že časová rada obsahuje mierny lineárny trend,
-čo by znamenalo že je nestacionárna. Následne si vykresíme autokorelačnú (zkrátene) a
-parciálknu autokorelačnú funkciu (zkrátene PACF).
-
-\begin{figure}[!tbo] \centering
+\begin{figure}[H] \centering
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=1\linewidth]{images/heap_acf.pdf}
@@ -118,20 +136,19 @@ parciálknu autokorelačnú funkciu (zkrátene PACF).
         \label{obr:heap_pacf}
     \end{subfigure}
 %    \caption{Parciálna autokorelačná funkcia.}
-    \label{fig:test}
+    %\label{fig:test}
 \end{figure}
 
-Z obrázka \ref{obr:heap_acf} je vidieť že hodnoty ACF sú kladné ale avšak relatívne blízke
-nule, stým že významne neklesajú k nule. 
-V grafe ACF \ref{obr:heap_acf} taktiež nie sú prítomné prítomné periodicky posunuté vysoké hodnoty, 
-takže rada neobsahuje sezónnosť.
-
-Keďže hodnotz ACF so zvyšujúcim spozdením neklesali k nule rozhodli sme sa urobiť ADF test
-na test stacionarity.
+Z grafu autokorelačnej funkcie \ref{obr:heap_acf} je vidieť že hodnoty sú kladné ale relatívne blízke
+nuly, stým že významne neklesajú. 
+Na grafe \emph{ACF} taktiež nie sú prítomné periodicky posunuté vysoké hodnoty, 
+ktoré by indikovali sezónnosť.
+Keďže hodnoty \emph{ACF} so zvyšujúcim spozdením neklesajú k nule rozhodli sme sa urobiť
+\emph{ADF} test na testovanie stacionarity.
 
 \begin{minipage}{\linewidth}
 \begingroup
-\fontsize{9pt}{7pt}\selectfont
+\fontsize{9pt}{7pt}\selectfont 
 \begin{verbatim}
 > adfTest(as.numeric(b$avg), lags = 0, type="nc")
 Title:
@@ -147,10 +164,9 @@ Test Results:
 \endgroup
 \end{minipage}
 
-Z vyšie uvedeného ADF testu môžeme vidieť, že nulovú hypotézu časová rada
-nie je stacionárna by sme na hladine významnosti 0.05 ne zametli. Takže naša časová rada
-je nestacionárna. Pre overenie skusíme KPSS test, ktorého nulová hypotéza je že časová 
-rada je stacionárna.
+Nulovú hypotézu \emph{ADF} testu o prítomnosti jednotkového koreňa, na hladine významnosti 0.05
+nezamietame. Takže naša časová rada je nestacionárna. Pre overenie skusíme \emph{KPSS} test,
+ktorého nulová hypotéza je, že časová rada je stacionárna.
 
 \begin{minipage}{\linewidth}
 \begingroup
@@ -163,9 +179,11 @@ KPSS Level = 2.5916, Truncation lag parameter = 3, p-value = 0.01
 \end{verbatim}
 \endgroup
 \end{minipage}
+
 Na hladine významnosti by sme nulovú hypotézu zamietli. Oba testy nám ukázali, že časová
 rada nie je stacinárna. 
-Následne môžeme pomocou KPSS testu testovať, či je daná časová rada trend stacinárna:
+Následne môžeme pomocou \emph{KPSS} testu testovať, či je daná časová rada trend stacinárna.
+
 \begin{minipage}{\linewidth}
 \begingroup
 \fontsize{9pt}{7pt}\selectfont
@@ -182,42 +200,46 @@ KPSS Trend = 0.073128, Truncation lag parameter = 3, p-value = 0.1
 \end{verbatim}
 \endgroup
 \end{minipage}
+
 Z výstupu je jasné, že rada je trend stacinárna takže nulovú hypotézu na hladine 0.05
 nezamietame.
 
-Ďalej pokračujeme vykreslením ACF a PAC. Z obrázka parciálnej autokorelačnej funkcie \ref{heap_diff_pacf} 
-možme usúdiť, že do úvahy by spadal model \emph{AR(15)} alebo \emph{MA(1)}. Keďže ACF je
+Časovú radu stacionarizijeme diferenciovaním a pokračujeme vykreslením \emph{ACF} a
+\emph{PAC} upravenej časovej rady. Z grafu parciálnej autokorelačnej funkcie 
+\ref{obr:heap_diff_acf_pacf} možme usúdiť, že do úvahy by 
+spadal model \emph{AR(15)} alebo \emph{MA(1)}. Keďže \emph{ACF} je
 možné obmedziť krivkou U, tak je lepšie vybrať model \emph{MA(1)} \cite{cipra}.
-\begin{figure}[!tbo] \centering
+
+\begin{figure}[H] \centering
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=1\linewidth]{images/heap_diff_acf.pdf}
-%        \caption{Autokorelačná funkcia rady.}
-        \label{obr:heap_diff_acf}
+%        \caption{Autokorelačná funkcia diferencovanej rady.}
+%        \label{obr:heap_diff_acf}
         %Pcf(diff, main='Java Heap usage diff')
     \end{subfigure}
     \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=1\linewidth]{images/heap_diff_pacf.pdf}
-%        \caption{Parciálna autokorelačná funkcia rady.}
-        \label{obr:heap_diff_pacf}
+%        \caption{Parciálna autokorelačná funkcia diferencovanej rady.}
+%        \label{obr:heap_diff_pacf}
         %Pacf(diff, main='Java Heap usage diff')
     \end{subfigure}
     \caption{ACF a PACF diferencovanej časovej rady.}
-    \label{fig:test}
+    \label{obr:heap_diff_acf_pacf}
 \end{figure}
 
 Alternatívny spôsob voľby modelu je pomocou informačných kritérii. Tento spôsob je
 vhodný pre plne automatizované spracovanie \cite{cipra} napríklad v ekonometrických 
-softvéroch. K identifikácia modelu ARMA(p, q) sa priktupuje ako k minimalizácii funkcie
+softvéroch. K identifikácia modelu \emph{ARMA(p, q)} sa priktupuje ako k minimalizácii funkcie
 \ref{rov:inf_k}
 
 \begin{eqnarray} \label{rov:inf_k}
     (\hat{p}, \hat{q}) =arg\ \underset{(k,l)}{min}\ A(k, l)
 \end{eqnarray}
 
-\emph{A} je vhodné kritérium pre ktorého konštrukciu musíme odhadnúť model ARMA(k,l). Pri
-minimalizácii postupujeme postupne inkrementujeme obidva parametre k, l.
+\emph{A} je vhodné kritérium pre ktorého konštrukciu musíme odhadnúť model
+\emph{ARMA(k,l)}. Pri minimalizácii postupujeme postupne inkrementujeme obidva parametre k, l.
 V tejto práci sme zvolili Akaikeho informačné kritérium:
 
 \begin{eqnarray} \label{rov:aic}
@@ -226,7 +248,7 @@ V tejto práci sme zvolili Akaikeho informačné kritérium:
 
 Z rovnice \ref{rov:aic} je zrejmé, že kritérium penalizuje veľké rády k a l. 
 $\hat{\sigma}^{2}_{k,l}$ je smerodajná odchylka reziduí modelu. 
-Poďme si vypísať niekoľko kandidátov ARIMA modelov pomocu príkazu auto.arima().
+Poďme si vypísať niekoľko kandidátov \emph{ARIMA} modelov pomocu príkazu auto.arima().
 
 \begin{minipage}{\linewidth}
 \begingroup
@@ -255,58 +277,89 @@ s.e.   0.0716   0.0716   0.0199
 \endgroup
 \end{minipage}
 
-Ako je vidieť funkcia zvolila model ARIMA(2,1,1) ktorého AIC kritérium bolo najnižšie.
+Ako je vidieť funkcia zvolila model \emph{ARIMA(2,1,1)} ktorého \emph{AIC} kritérium bolo najnižšie.
 Odhadnutý model môžeme zapísať v tvare:
 \begin{eqnarray} \label{rov:arima_model}
     Y_t = -0.985 Y_{t-1} - 0.1774 Y_{t-2} -0.9441\epsilon_{t-1} + \epsilon_{t}
 \end{eqnarray}
 
-Takto sme ukázali, že je možné konštrulovať ARIMA model aj analytickým spôsobom. 
-Chcel by som avšak poznanenať, že voľbu modelu je lepšie nechať na overený štatistický
-softvér. 
+Ukázali sme, že je možné konštrulovať \emph{ARIMA} model aj analytickým spôsobom. 
+Chcel by som avšak poznanenať, že voľbu modelu je lepšie prenechať overenému 
+štatistickému softvéru. 
 
-Po úspšnom odhade rádu modelu je by som chcel zmieniť ako sa počítajú jednotlivé
-koeficienty. Pre AR model platí, že sa dajú vypočítať pomocou OLS alebo Yule\,--\,Walkerových
-rovníc \cite{brockwell_ts}. Výpočet kofeicientov MA modelu je zložitejší a je možný pomocou rekurzívnej Levison-Durbin 
-metódy. Odhadom presných parametrov modelu sa v tejto práci ďalej zaoberať.  
+Po úspšnom odhade rádu modelu je by sme chceli zmieniť ako sa počítajú jednotlivé
+koeficienty. Pre \emph{AR} model platí, že sa dajú vypočítať pomocou \emph{OLS} alebo Yule\,--\,Walkerových
+rovníc \cite{brockwell_ts}. Výpočet kofeicientov \emph{MA} modelu je zložitejší a 
+je možný pomocou rekurzívnej Levison-Durbin metódy.
+Odhadom presných parametrov modelu sa v tejto práci ďalej nebudene zaoberať.  
 
 Na záver sa pozrieme na rezíduá odhadnutého modelu. Ak sme postupovali správne rezíduá by
-mali pripomínať biely šum a nemali by byť medzi sebou korelované (inakšie by sme ich
+mali pripomínať biely šum a nemali by byť korelované (inakšie by sme ich
 vedeli modelovať). Toto tvrdenie si overíme Ljung\,--\,Box testom, ktorého nulová hypotéza
-hovorí o tom, že sú dáta nezávislé distribuované. Z grafu \ref{obr:ljung} môžeme
+hovorí o tom, že dáta sú nezávislé distribuované. Z grafu \ref{obr:heap_resid} môžeme
 prehlásiť, že nulovú hypotézu na hladine významnosti 0.05 nezamietame.
 
-Na následujúcich grafoch si vykresíme rezíduá, ich autokorelačnú funkciu a p-hodnoty
+Na následujúcich grafoch si vykresíme rezíduá modelu, ich autokorelačnú funkciu a p-hodnoty
 pre rôzdne opozdenia Ljung\,--\,Box testu.
 
-
-\begin{figure}[!tbo] \centering
-    \begin{subfigure}[b]{0.55\textwidth}
+\begin{figure}[H] \centering
+    \begin{subfigure}{0.55\textwidth}
         \centering
         \includegraphics[width=1\linewidth,height=5cm]{images/heap_resid.pdf}
 %        \caption{}
         \label{obr:heap_resid_resid}
     \end{subfigure}
-    \begin{subfigure}[b]{0.55\textwidth}
+    \begin{subfigure}{0.55\textwidth}
         \centering
         \includegraphics[width=1\linewidth,height=5cm]{images/heap_box.pdf}
 %        \caption{}
-        \label{obr:heap_resid_ljung}
+%        \label{obr:heap_resid_ljung}
     \end{subfigure}
-    \caption{Rezíduá odhadnutého ARIMA modelu.}
-    \label{obr:heap_resid}
+    \caption{Rezíduá odhadnutého \emph{ARIMA} modelu.}
+     \label{obr:heap_resid}
 \end{figure}
 
-\begin{figure}[htb] \centering
-    \includegraphics[width=.8\textwidth]{images/heap_forecast.pdf}
-    \caption{Predikcia na 20 krokov do predu.}
-    \label{obr:heap_forecast}
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=.8\textwidth,height=6cm]{images/heap_forecast.pdf}
+        \caption{ARIMA, predikcia na 20 krokov do predu.}
+        \label{obr:heap_forecast}
+    \end{center}
 \end{figure}
 
+\section{Exponenciálne vyrovnávanie\,--\,Holtova metóda}
+Zobecnením dvojitého exponenciálneho vyrovnávania je takzvaná Holtova metoda.
+Táto metóda používa dve vyrovnávacie konštanty: $\alpha$ pre vyrovnanie úrovne $l_t$
+a $\beta$ pre vyrovnanie smernice $b_t$ (lineárneho trendu).
+Výhoda tejto metódy je možnosť použitia v prúdovom spracovaní, kde nie je možné získať staré hodnoty časovej rady. 
+Rovnice majú tvar \ref{exp_holt}. Parametre $\alpha, \beta$ patria do intervalu 
+$\alpha,\beta \in (0,1)$. Pre exponenciálne vyrovnanie platí, 
+čím je hodnota parametra $\alpha$ menšia, tak väčšia váha je daná pozorovaniam z
+vzdialenej minulosti.
 
+\begin{eqnarray} \label{exp_holt}
+    \hat{y}_{t+h} = l_{t} + hb_{t} \\
+    \nonumber l_t = \alpha y_t + (1 - \alpha) (l_{t-1} + b_{t-1}) \\
+    \nonumber b_t = \beta (l_t - l_{t-1}) + (1 - \beta)b_{t-1} 
+\end{eqnarray}
+ 
+V jazyku \emph{R} použijeme funkciu \emph{holt}, ktorá počíta predikciu na \emph{k} krokov 
+do predu. Súčasťou funkcie je aj výpočet parametrov $\alpha$ a $\beta$.
 
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=.8\textwidth,height=6cm]{images/heap_holt.pdf}
+        \caption{Holt, predikcia na 20 krokov do predu.}
+        \label{obr:heap_holt}
+    \end{center}
+\end{figure}
 
 \section{Záver}
+Na záver by som porovnal kvadratickú sumu chýb (\emph{SSE}) oboch modelov. Pre
+model \emph{ARIMA} chyba vyšla $3.377059e+17$ pre Holtovu metódu $3.657135e+17$. 
+Vidíme, že rozdiel nieje významne iný. Keď opticky porovnáme grafy \ref{obr:heap_forecast},
+\ref{obr:heap_holt} vidíme, že exponenciálne vyrovnanie strmšie klesá
+
 
 \section*{Poďakovanie}
 Na záver by som chcel poďakovať Ing. Danielovi Němcovi, Ph.D. za návrh na vypracovanie
@@ -327,6 +380,7 @@ tejto témi a za veľmi príjemné a užitočné konzultácie. Ďalej by som chc
 
 \begin{itemize}
     \item Skript v jazyku R
+    \item Dáta analyzovanej časovej rady
     \item Zdrojový text tejto správy v \LaTeX\,--\,e
 \end{itemize}
 

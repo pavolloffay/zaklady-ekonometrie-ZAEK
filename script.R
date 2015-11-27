@@ -21,3 +21,10 @@ Box.test(arima$residuals, type='Ljung-Box', fitdf=1, lag=2)
 lBox = LjungBoxTest(arima$residuals, lag.max=10, k=1);
 plot(lBox[,1], lBox[,3], ylim=0, main='Ljung-Box Test', ylab='p-value', xlab='lag');
 abline(h=0.05, col='blue', lty=2)
+
+# Holt
+holt = holt(as.numeric(df$avg), h=20)
+plot(holt)
+
+# pekny vypis 
+#tsdisplay(as.numeric(df$avg), main='Java Heap Used', col='red')
