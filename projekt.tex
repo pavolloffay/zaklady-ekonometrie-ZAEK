@@ -354,9 +354,52 @@ do predu. Súčasťou funkcie je aj výpočet parametrov $\alpha$ a $\beta$.
     \end{center}
 \end{figure}
 
+\section{Adaptívna filtrácia\,--\,LMS algoritmus}
+Odhad parametrov autoregresívneho modelu je možné vypočítať 
+pomocou algoritmu LMS (Least Mean Square). Výpočet venktoru váh je uvedený v
+rovnici \ref{lms}. Chyba $e$ je rozdiel súčasnej hodnoty časovej rady s odhadnutov pomocou
+váh LMS. S väčším počtom pozorovaní je výpočet váh presnejší. Algoritmus 
+má nevýhodu, že dopredu musíme odhanúť parameter $\alpha$. Toto býva väčšinou problém 
+a preto sa volí buď normalizovaná verzia algoritmu alebo algoritmus RLS (Recursive Least
+Square) pri ktorý tento parameter neobsahuje. V porovnaní RLS algoritmus konverguje
+rýchlejšie ale je výpočetne náročnejsí.  
+
+\begin{eqnarray} \label{lms}
+    w(t+1) = w(t) + \alpha * e(t) * x(t)
+\end{eqnarray}
+
+Funkčnosť algoritmu budeme demonštrovat na gererovaných dátach, pri ktorých vieme 
+aký proces ich generoval. Takto budeme môcť výsledky overiť s výstupom s LMS algoritmu.
+
+\begin{minipage}{\linewidth}
+\begingroup
+\fontsize{9pt}{7pt}\selectfont
+\begin{verbatim}
+n = 1500;
+series = arima.sim(n, model=list(ar=c(0.3, -0.8745)), rand.gen=rnorm);
+result = lms(series, alpha, AR);
+"Estimated weights"
+[1]  0.3397577 -0.8287951
+\end{verbatim}
+\endgroup
+\end{minipage}
+
+Z uvedeného výstupu z R vidíme že časová rada bola generovaná pomocou
+$y = 0.3*y_{t-1} - 0.8745*y_{t-2}$ a na vstup vstup dát z normálneho rozdelenia so
+strednou hodnotou 0 a smerodatnou odchylkou 1. Z grafu \ref{obr:lms} je vidieť priebeh
+výpočtu váh pomocou LMS algoritmu.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=.8\textwidth,height=6cm]{images/lms.pdf}
+        \caption{Priebeh výpočtu váh AR procesu pomocu LMS algoritmu.}
+        \label{obr:lms}
+    \end{center}
+\end{figure}
+
 \section{Záver}
 Na záver by som porovnal kvadratickú sumu chýb (\emph{SSE}) oboch modelov. Pre
-model \emph{ARIMA} chyba vyšla $3.377059e+17$ pre Holtovu metódu $3.657135e+17$. 
+model \emph{ARIMA} chyba vyšla $3.377059*10^17$ pre Holtovu metódu $3.657135*10^17$. 
 Vidíme, že rozdiel nieje významne iný. Keď opticky porovnáme grafy \ref{obr:heap_forecast},
 \ref{obr:heap_holt} vidíme, že exponenciálne vyrovnanie strmšie klesá
 
@@ -379,7 +422,7 @@ tejto témi a za veľmi príjemné a užitočné konzultácie. Ďalej by som chc
 \section{Prílohy}
 
 \begin{itemize}
-    \item Skript v jazyku R
+    \item Zdrojové súbory v jazyku R
     \item Dáta analyzovanej časovej rady
     \item Zdrojový text tejto správy v \LaTeX\,--\,e
 \end{itemize}
