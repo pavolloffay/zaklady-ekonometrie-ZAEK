@@ -9,7 +9,6 @@ pdf: $(NAME).tex $(BIB).bib
 	bibtex $(NAME)
 	pdflatex $<
 	pdflatex $<
-	pdflatex $<
 
 clean:
 	rm -f $(NAME).{dvi,pdf,log,aux,ps,out,bbl,blg}
