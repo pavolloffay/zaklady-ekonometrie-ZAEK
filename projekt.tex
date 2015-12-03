@@ -53,7 +53,7 @@
       #1 {,} #2
  }
 
-\NewDocumentCommand{\interval}{ s m >{\SplitArgument{1}{,}}m m o }{
+\NewDocumentCommand{\interval}{ s m >{\SplitArgument{1}{,}}m m o}{
       \IfBooleanTF{#1}{
           \left#2 \INTERVALINNARDS #3 \right#4
       }{
@@ -68,7 +68,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TITULNI STRANA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\NazevPrace{Modelovanie časových rád z monitorovacieho systému Hawkular}
+\NazevPrace{Modelovanie časových rád z~monitorovacieho systému Hawkular}
 \Autor{Bc. Pavol Loffay}
 \Univerzita{Masarykova univerzita}
 \Fakulta{Fakulta informatiky}
@@ -76,10 +76,10 @@
 \Mail{p.loffay@mail.muni.cz}
 \DatumOdevzdani{\today}
 \Abstrakt{
- Práca spracováva predikciu časových rád prevzatých z monitorovacieho systému
+ Práca spracováva predikciu časových rád prevzatých z~monitorovacieho systému
  Hawkular\footnote{Dostupné na \url{http://www.hawkular.org}}. Tento systém dokáže
  monitorovať Java aplikácie, alebo fyzický hardvér na ktorom je spustený.
- Z množiny pozorovaných metrík bola vybratá vyťaženosť Java hromady (heap).
+ Z~množiny pozorovaných metrík bola vybratá vyťaženosť Java hromady (heap).
  Pre túto časovú radu boli zostrojené modely: \emph{ARIMA} a exponenciálne vyhladzovanie.
  Ďalej bola demonštrovaná adaptívna filtrácia, ktorá pomocou algoritmu \emph{LMS}
  vypočítala koeficienty \emph{AR} modelu na generovaných dátach.
@@ -97,22 +97,22 @@
 Monitorovanie dôležitých biznis aplikácii, medzi ktoré patria napríklad bankové systémy alebo rôzne
 servery, na ktorých bežia služby využívané 24/7 je veľmi dôležité. Väčšina
 monitorovacích systémov dokáže upozorniť administrátora na vyťaženie pri prekročení
-hraničnej hodnoty. V monitorovacom systéme Hawkular je možné zapnúť predikciu tak, že
-administrátor bude upozornený vopred ak by náhodou malo dôjsť k prekročeniu spomenutej
-hraničnej hodnoty. Použité modely časových rád v systéme Hawkular sú varianty
-exponenciálneho vyhladzovania. Modely \emph{ARIMA} nemohli byť použité z dôvodu nestacionarity dát 
+hraničnej hodnoty. V~monitorovacom systéme Hawkular je možné zapnúť predikciu tak, že
+administrátor bude upozornený vopred ak by náhodou malo dôjsť k~prekročeniu spomenutej
+hraničnej hodnoty. Použité modely časových rád v~systéme Hawkular sú varianty
+exponenciálneho vyhladzovania. Modely \emph{ARIMA} nemohli byť použité z~dôvodu nestacionarity dát 
 a náročnosti na výpočet\,--\,systém je schopný analyzovať aj niekoľko tisíc modelov naraz. 
 
 Táto práca sa zameria na konštrukciu optimálneho \emph{ARIMA} modelu, ktorý následne porovná
-s exponenciálnym vyhladzovaním, konkrétne Holtovou metódou s lineárnym trendom. Následne
+s~exponenciálnym vyhladzovaním, konkrétne Holtovou metódou s~lineárnym trendom. Následne
 bude demonštrovaná adaptívna filtrácia. Pre výpočetnú nenáročnosť  bola použitá 
 kombinácia exponenciálneho vyhladzovania a
-adaptívnej filtrácie v systéme Hawkular.
+adaptívnej filtrácie v~systéme Hawkular.
 
 
-\section{Identifikácia \emph{ARIMA} modelu}
-V tejto kapitole budeme analyticky identifikovať najvhodnejší \emph{ARIMA} model, ktorý následne 
-porovnáme s výsledkom funkcie \texttt{auto.arima} z balíka \texttt{forecast} v jazyku
+\section{Identifikácia ARIMA modelu}
+V~tejto kapitole budeme analyticky identifikovať najvhodnejší \emph{ARIMA} model, ktorý následne 
+porovnáme s~výsledkom funkcie \texttt{auto.arima} z~balíka \texttt{forecast} v~jazyku
 \emph{R}.
 
 Začneme vykreslením časovej rady. Na obrázku \ref{obr:heap} je možné vidieť, že časová rada 
@@ -122,7 +122,7 @@ obsahuje mierny lineárny trend, čo indikuje nestacionaritu. Vykreslíme autoko
 \begin{figure}[H] 
     \begin{center}
         \includegraphics[width=.8\textwidth]{images/heap_series.pdf}
-        \caption{Vyťaženosť Java Heap-u v čase.}
+        \caption{Vyťaženosť Java Heap-u v~čase.}
         \label{obr:heap} % unikatni navesti, pomoci ktereho se budeme v textu odvolavat na dany obrazek
     \end{center}
 \end{figure}
@@ -144,11 +144,11 @@ obsahuje mierny lineárny trend, čo indikuje nestacionaritu. Vykreslíme autoko
     %\label{fig:test}
 \end{figure}
 
-Z grafu autokorelačnej funkcie \ref{obr:heap_acf} je vidieť, že hodnoty sú kladné,
+Z~grafu autokorelačnej funkcie \ref{obr:heap_acf} je vidieť, že hodnoty sú kladné,
 relatívne blízko nuly a neklesajú. 
 Na grafe \emph{ACF} taktiež nie sú prítomné periodicky posunuté vysoké hodnoty, 
 ktoré by indikovali sezónnosť.
-Keďže hodnoty \emph{ACF} so zvyšujúcim oneskorením neklesajú k nule rozhodli sme sa urobiť
+Keďže hodnoty \emph{ACF} so zvyšujúcim oneskorením neklesajú k~nule rozhodli sme sa urobiť
 \emph{ADF} test na testovanie stacionarity.
 
 \begin{minipage}{\linewidth}
@@ -169,8 +169,8 @@ Test Results:
 \endgroup
 \end{minipage}
 
-Nulovú hypotézu \emph{ADF} testu o prítomnosti jednotkového koreňa, na hladine významnosti 0.05
-nezamietame. Z toho vyplýva, že naša časová rada je nestacionárna. Pre dôkladné 
+Nulovú hypotézu \emph{ADF} testu o~prítomnosti jednotkového koreňa, na hladine významnosti 0.05
+nezamietame. Z~toho vyplýva, že naša časová rada je nestacionárna. Pre dôkladné 
 overenie skúsime \emph{KPSS} test, ktorého nulová hypotéza znie, že časová rada je stacionárna.
 
 \begin{minipage}{\linewidth}
@@ -206,17 +206,17 @@ KPSS Trend = 0.087693, Truncation lag parameter = 3, p-value = 0.1
 \endgroup
 \end{minipage}
 
-Z výstupu je jasné, že rada je trend stacinárna takže nulovú hypotézu na hladine 0.05
+Z~výstupu je jasné, že rada je trend stacinárna takže nulovú hypotézu na hladine 0.05
 nezamietame.
 
 Časovú radu stacionarizujeme diferencovaním a pokračujeme vykreslením \emph{ACF} a
 \emph{PACF} upravenej časovej rady. 
-Významný bod useknutia sa nám v oboch grafoch \ref{obr:heap_diff_acf_pacf} nepodarilo nájsť. 
+Významný bod useknutia sa nám v~oboch grafoch \ref{obr:heap_diff_acf_pacf} nepodarilo nájsť. 
 To indikuje, že výsledný 
-model sa bude skladať z \emph{AR} aj \emph{MA} zložky. Teraz by sme mali hľadať krivku 
-\emph{U}, ktorá od nejakého bodu pripomína krivku v tvare lineárnych kombinácii klesajúcich
-geometrických postupností sinusoid s geometricky klesajúcimi amplitúdami \cite{cipra}.
-Táto krivka v grafe \emph{ACF} ani \emph{PACF} nie je jednoznačne prítomná. Do modelu sme zahrnuli dve najväčšie 
+model sa bude skladať z~\emph{AR} aj \emph{MA} zložky. Teraz by sme mali hľadať krivku 
+\emph{U}, ktorá od nejakého bodu pripomína krivku v~tvare lineárnych kombinácii klesajúcich
+geometrických postupností sinusoid s~geometricky klesajúcimi amplitúdami \cite{cipra}.
+Táto krivka v~grafe \emph{ACF} ani \emph{PACF} nie je jednoznačne prítomná. Do modelu sme zahrnuli dve najväčšie 
 hodnoty \emph{PACF} (model \emph{AR}) a jednu \emph{ACF} (model \emph{MA}).
 Výsledný model bude má tvar \emph{ARIMA(2,1,1)}.
 
@@ -238,8 +238,8 @@ Výsledný model bude má tvar \emph{ARIMA(2,1,1)}.
 \end{figure}
 
 Alternatívny spôsob voľby modelu je pomocou informačných kritérií. Tento spôsob je
-vhodný pre plne automatizované spracovanie \cite{cipra} napríklad v ekonometrických 
-softvéroch. K identifikácii modelu \emph{ARMA(p, q)} sa pristupuje ako k minimalizácii funkcie
+vhodný pre plne automatizované spracovanie \cite{cipra} napríklad v~ekonometrických 
+softvéroch. K~identifikácii modelu \emph{ARMA(p, q)} sa pristupuje ako k~minimalizácii funkcie
 \ref{rov:inf_k}.
 
 \begin{eqnarray} \label{rov:inf_k}
@@ -248,13 +248,13 @@ softvéroch. K identifikácii modelu \emph{ARMA(p, q)} sa pristupuje ako k minim
 
 \emph{A} je vhodné kritérium pre výpočet ktorého musíme odhadnúť model
 \emph{ARMA(k,l)}. Pri minimalizácii postupne inkrementujeme oba parametre k, l.
-Informačných kritérií existuje viac. V tejto práci sme zvolili Akaikovo informačné kritérium:
+Informačných kritérií existuje viac. V~tejto práci sme zvolili Akaikovo informačné kritérium:
 
 \begin{eqnarray} \label{rov:aic}
     A(k,l) = AIC(k,l) = ln\hat{\sigma}^{2}_{k,l} + \frac{2(k+l+1)}{n}
 \end{eqnarray}
 
-Z rovnice \ref{rov:aic} je zrejmé, že kritérium penalizuje veľké rády k a l. 
+Z~rovnice \ref{rov:aic} je zrejmé, že kritérium penalizuje veľké rády k~a l. 
 $\hat{\sigma}^{2}_{k,l}$ je smerodajná odchýlka reziduí modelu. 
 Poďme si vypísať niekoľko kandidátov \emph{ARIMA} modelov pomocou príkazu
 \texttt{auto.arima}.
@@ -287,7 +287,7 @@ s.e.   0.0716   0.0716   0.0199
 \end{minipage}
 
 Ako je vidieť funkcia zvolila model \emph{ARIMA(2,1,1)} ktorého \emph{AIC} kritérium bolo najnižšie.
-Odhadnutý model môžeme zapísať v tvare:
+Odhadnutý model môžeme zapísať v~tvare:
 \begin{eqnarray} \label{rov:arima_model}
     Y_t = -0.985 Y_{t-1} - 0.1774 Y_{t-2} -0.9441\epsilon_{t-1} + \epsilon_{t}
 \end{eqnarray}
@@ -300,12 +300,12 @@ Po úspešnom odhade rádu modelu by sme chceli spomenúť ako sa počítajú je
 koeficienty. Pre \emph{AR} model platí, že sa dajú vypočítať pomocou \emph{OLS} alebo Yule\,--\,Walkerových
 rovníc \cite{brockwell_ts}. Výpočet koeficientov \emph{MA} modelu je zložitejší a 
 je možný pomocou rekurzívnej Levison\,--\,Durbin metódy.
-Odhadom presných parametrov modelu sa v tejto práci ďalej nebudeme zaoberať.  
+Odhadom presných parametrov modelu sa v~tejto práci ďalej nebudeme zaoberať.  
 
 Na záver sa pozrieme na rezíduá odhadnutého modelu. Ak sme postupovali správne rezíduá by
 mali pripomínať biely šum a nemali by byť korelované (inakšie by sme ich
 vedeli modelovať). Toto tvrdenie si overíme Ljung\,--\,Box testom, ktorého nulová hypotéza
-hovorí o tom, že dáta sú nezávislé distribuované. Z grafu \ref{obr:heap_resid} môžeme
+hovorí o~tom, že dáta sú nezávislé distribuované. Z~grafu \ref{obr:heap_resid} môžeme
 prehlásiť, že nulovú hypotézu na hladine významnosti 0.05 nezamietame.
 
 Na následujúcich grafoch si vykreslíme rezíduá modelu, ich autokorelačnú funkciu a p-hodnoty
@@ -340,7 +340,7 @@ pre rôzne oneskorenia Ljung\,--\,Box testu.
 Zobecnením dvojitého exponenciálneho vyhladzovania je takzvaná Holtova metóda.
 Táto metóda používa dve vyrovnávacie konštanty: $\alpha$ pre vyrovnanie úrovne $l_t$
 a $\beta$ pre vyrovnanie smernice $b_t$ (lineárneho trendu).
-Výhoda tejto metódy je možnosť použitia v prúdovom spracovaní, kde nie je možné získať staré hodnoty časovej rady. 
+Výhoda tejto metódy je možnosť použitia v~prúdovom spracovaní, kde nie je možné získať staré hodnoty časovej rady. 
 Rovnice majú tvar \ref{exp_holt}. Parametre $\alpha, \beta$ patria do intervalu 
 $\alpha,\beta \in (0,1)$. Pre exponenciálne vyhladzovanie platí, 
 čím je hodnota parametra $\alpha$ menšia, tým väčšia váha je daná pozorovaniam zo
@@ -352,7 +352,7 @@ vzdialenej minulosti.
     \nonumber b_t = \beta (l_t - l_{t-1}) + (1 - \beta)b_{t-1} 
 \end{eqnarray}
  
-V jazyku \emph{R} použijeme funkciu \emph{holt}, ktorá počíta predikciu na \emph{k} krokov 
+V~jazyku \emph{R} použijeme funkciu \emph{holt}, ktorá počíta predikciu na \emph{k} krokov 
 dopredu. Súčasťou funkcie je aj výpočet parametrov $\alpha$ a $\beta$.
 
 \begin{figure}[H]
@@ -363,14 +363,14 @@ dopredu. Súčasťou funkcie je aj výpočet parametrov $\alpha$ a $\beta$.
     \end{center}
 \end{figure}
 
-\section{Adaptívna filtrácia\,--\,\emph{LMS} algoritmus}
+\section{Adaptívna filtrácia\,--\,LMS algoritmus}
 Odhad parametrov autoregresívneho modelu je možné vypočítať 
-pomocou algoritmu \emph{LMS} (Least Mean Square). Výpočet vektoru váh je uvedený v
-rovnici \ref{lms}. Chyba $e$ je rozdiel súčasnej hodnoty časovej rady s odhadnutou pomocou
-váh \emph{LMS}. S väčším počtom pozorovaní je výpočet váh presnejší. Algoritmus 
-má nevýhodu v tom, že musíme dopredu odhadnúť parameter $\alpha$. Toto býva väčšinou problém 
+pomocou algoritmu \emph{LMS} (Least Mean Square). Výpočet vektoru váh je uvedený
+v~rovnici \ref{lms}. Chyba $e$ je rozdiel súčasnej hodnoty časovej rady s~odhadnutou pomocou
+váh \emph{LMS}. S~väčším počtom pozorovaní je výpočet váh presnejší. Algoritmus 
+má nevýhodu v~tom, že musíme dopredu odhadnúť parameter $\alpha$. Toto býva väčšinou problém 
 a preto sa volí buď normalizovaná verzia alebo algoritmus \emph{RLS} (Recursive Least
-Square), ktorý tento parameter neobsahuje. V porovnaní \emph{RLS} algoritmus konverguje
+Square), ktorý tento parameter neobsahuje. V~porovnaní \emph{RLS} algoritmus konverguje
 rýchlejšie ale je výpočetne náročnejší.  
 
 \begin{eqnarray} \label{lms}
@@ -378,7 +378,7 @@ rýchlejšie ale je výpočetne náročnejší.
 \end{eqnarray}
 
 Funkčnosť algoritmu budeme demonštrovať na generovaných dátach, pri ktorých vieme 
-aký proces ich generoval. Takto budeme môcť výsledky overiť s výstupom s \emph{LMS} algoritmu.
+aký proces ich generoval. Takto budeme môcť výsledky overiť s~výstupom s~\emph{LMS} algoritmu.
 
 \begin{minipage}{\linewidth}
 \begingroup
@@ -393,10 +393,10 @@ result = lms(series, alpha, AR);
 \endgroup
 \end{minipage}
 
-Z uvedeného výstupu z R vidíme že časová rada bola generovaná pomocou
-$y = 0.3*y_{t-1} - 0.8745*y_{t-2}$ a na vstupe boli hodnoty z normálneho rozdelenia so
+Z~uvedeného výstupu z~R vidíme že časová rada bola generovaná pomocou
+$y = 0.3*y_{t-1} - 0.8745*y_{t-2}$ a na vstupe boli hodnoty z~normálneho rozdelenia so
 strednou hodnotou 0 a smerodajnou odchýlkou 1. Na grafe \ref{obr:lms} je vidieť priebeh
-výpočtu váh v čase.
+výpočtu váh v~čase.
 
 \begin{figure}[H]
     \begin{center}
@@ -419,7 +419,7 @@ voliť výpočetne nenáročný model, aby bolo možné spracovávať napríklad
 Výsledky adaptívnej filtrácie ukázali, že je možné vypočítať parametre \emph{AR} modelu
 pomocou jednoduchých algoritmov ako je napríklad \emph{LMS} ak máme dostatočne veľký počet
 pozorovaní. Kombináciou adaptívnej filtrácie a exponenciálneho vyhladzovania by sme mohli 
-dospieť k zaujímavému modelu, ktorý by mohol mať dobré prediktívne vlastnosti a nízku
+dospieť k~zaujímavému modelu, ktorý by mohol mať dobré prediktívne vlastnosti a nízku
 výpočetnu náročnosť.
 
 \section*{Poďakovanie}
@@ -440,9 +440,9 @@ tejto témy a za veľmi príjemné a užitočné konzultácie. Ďalej by som chc
 \section{Prílohy}
 
 \begin{itemize}
-    \item Zdrojové súbory v jazyku R v adresári \texttt{scripts}
-    \item Dáta analyzovanej časovej rady v adresári \texttt{scripts}
-    \item Zdrojový text tejto správy v \LaTeX\,--\,e
+    \item Zdrojové súbory v~jazyku R v~adresári \texttt{scripts}
+    \item Dáta analyzovanej časovej rady v~adresári \texttt{scripts}
+    \item Zdrojový text tejto správy v~\LaTeX\,--\,e
 \end{itemize}
 
 \end{document}
