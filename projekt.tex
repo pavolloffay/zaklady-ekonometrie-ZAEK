@@ -47,6 +47,9 @@
 \newtheorem*{pozn}{Poznámka}
 \numberwithin{equation}{section}
 
+\hyphenation{p-hodnota}
+\hyphenation{p-hodnoty}
+
 
 \usepackage{xparse}
   \NewDocumentCommand{\INTERVALINNARDS}{ m m }{
@@ -80,7 +83,7 @@
  Hawkular\footnote{Dostupné na \url{http://www.hawkular.org}}. Tento systém dokáže
  monitorovať Java aplikácie, alebo fyzický hardvér na ktorom je spustený.
  Z~množiny pozorovaných metrík bola vybratá vyťaženosť Java hromady (heap).
- Pre túto časovú radu boli zostrojené modely: \emph{ARIMA} a exponenciálne vyhladzovanie.
+ Pre túto časovú radu boli zostrojené modely: \emph{ARIMA} a~exponenciálne vyhladzovanie.
  Ďalej bola demonštrovaná adaptívna filtrácia, ktorá pomocou algoritmu \emph{LMS}
  vypočítala koeficienty \emph{AR} modelu na generovaných dátach.
 }
@@ -117,7 +120,7 @@ porovnáme s~výsledkom funkcie \texttt{auto.arima} z~balíka \texttt{forecast} 
 
 Začneme vykreslením časovej rady. Na obrázku \ref{obr:heap} je možné vidieť, že časová rada 
 obsahuje mierny lineárny trend, čo indikuje nestacionaritu. Vykreslíme autokorelačnú 
-(skrátene \emph{ACF}) a parciálnu autokorelačnú funkciu (skrátene \emph{PACF}).
+(skrátene \emph{ACF}) a~parciálnu autokorelačnú funkciu (skrátene \emph{PACF}).
 
 \begin{figure}[H] 
     \begin{center}
@@ -145,7 +148,7 @@ obsahuje mierny lineárny trend, čo indikuje nestacionaritu. Vykreslíme autoko
 \end{figure}
 
 Z~grafu autokorelačnej funkcie \ref{obr:heap_acf} je vidieť, že hodnoty sú kladné,
-relatívne blízko nuly a neklesajú. 
+relatívne blízko nuly a~neklesajú. 
 Na grafe \emph{ACF} taktiež nie sú prítomné periodicky posunuté vysoké hodnoty, 
 ktoré by indikovali sezónnosť.
 Keďže hodnoty \emph{ACF} so zvyšujúcim oneskorením neklesajú k~nule rozhodli sme sa urobiť
@@ -209,7 +212,7 @@ KPSS Trend = 0.087693, Truncation lag parameter = 3, p-value = 0.1
 Z~výstupu je jasné, že rada je trend stacinárna takže nulovú hypotézu na hladine 0.05
 nezamietame.
 
-Časovú radu stacionarizujeme diferencovaním a pokračujeme vykreslením \emph{ACF} a
+Časovú radu stacionarizujeme diferencovaním a~pokračujeme vykreslením \emph{ACF} a
 \emph{PACF} upravenej časovej rady. 
 Významný bod useknutia sa nám v~oboch grafoch \ref{obr:heap_diff_acf_pacf} nepodarilo nájsť. 
 To indikuje, že výsledný 
@@ -217,7 +220,7 @@ model sa bude skladať z~\emph{AR} aj \emph{MA} zložky. Teraz by sme mali hľad
 \emph{U}, ktorá od nejakého bodu pripomína krivku v~tvare lineárnych kombinácii klesajúcich
 geometrických postupností sinusoid s~geometricky klesajúcimi amplitúdami \cite{cipra}.
 Táto krivka v~grafe \emph{ACF} ani \emph{PACF} nie je jednoznačne prítomná. Do modelu sme zahrnuli dve najväčšie 
-hodnoty \emph{PACF} (model \emph{AR}) a jednu \emph{ACF} (model \emph{MA}).
+hodnoty \emph{PACF} (model \emph{AR}) a~jednu \emph{ACF} (model \emph{MA}).
 Výsledný model bude má tvar \emph{ARIMA(2,1,1)}.
 
 \begin{figure}[H] \centering
@@ -298,17 +301,18 @@ Chcel by som však poznamenať, že voľbu modelu je lepšie prenechať overené
 
 Po úspešnom odhade rádu modelu by sme chceli spomenúť ako sa počítajú jednotlivé
 koeficienty. Pre \emph{AR} model platí, že sa dajú vypočítať pomocou \emph{OLS} alebo Yule\,--\,Walkerových
-rovníc \cite{brockwell_ts}. Výpočet koeficientov \emph{MA} modelu je zložitejší a 
-je možný pomocou rekurzívnej Levison\,--\,Durbin metódy.
+rovníc \cite{brockwell_ts}. Výpočet koeficientov \emph{MA} modelu je zložitejší a~je 
+možný pomocou rekurzívnej Levison\,--\,Durbin metódy.
 Odhadom presných parametrov modelu sa v~tejto práci ďalej nebudeme zaoberať.  
 
 Na záver sa pozrieme na rezíduá odhadnutého modelu. Ak sme postupovali správne rezíduá by
-mali pripomínať biely šum a nemali by byť korelované (inakšie by sme ich
+mali pripomínať biely šum a~nemali by byť korelované (inakšie by sme ich
 vedeli modelovať). Toto tvrdenie si overíme Ljung\,--\,Box testom, ktorého nulová hypotéza
 hovorí o~tom, že dáta sú nezávislé distribuované. Z~grafu \ref{obr:heap_resid} môžeme
 prehlásiť, že nulovú hypotézu na hladine významnosti 0.05 nezamietame.
 
-Na následujúcich grafoch si vykreslíme rezíduá modelu, ich autokorelačnú funkciu a p-hodnoty
+Na následujúcich grafoch si vykreslíme rezíduá modelu, ich autokorelačnú funkciu
+a~\mbox{p-hodnoty}
 pre rôzne oneskorenia Ljung\,--\,Box testu.
 
 \begin{figure}[H] \centering
@@ -353,7 +357,7 @@ vzdialenej minulosti.
 \end{eqnarray}
  
 V~jazyku \emph{R} použijeme funkciu \emph{holt}, ktorá počíta predikciu na \emph{k} krokov 
-dopredu. Súčasťou funkcie je aj výpočet parametrov $\alpha$ a $\beta$.
+dopredu. Súčasťou funkcie je aj výpočet parametrov $\alpha$~a~$\beta$.
 
 \begin{figure}[H]
     \begin{center}
@@ -393,9 +397,9 @@ result = lms(series, alpha, AR);
 \endgroup
 \end{minipage}
 
-Z~uvedeného výstupu z~R vidíme že časová rada bola generovaná pomocou
-$y = 0.3*y_{t-1} - 0.8745*y_{t-2}$ a na vstupe boli hodnoty z~normálneho rozdelenia so
-strednou hodnotou 0 a smerodajnou odchýlkou 1. Na grafe \ref{obr:lms} je vidieť priebeh
+Z~uvedeného výstupu z~R vidíme že časová rada bola generovaná pomocou \\
+\mbox{$y = 0.3*y_{t-1} - 0.8745*y_{t-2}$} a na vstupe boli hodnoty z~normálneho rozdelenia so
+strednou hodnotou 0 a~smerodajnou odchýlkou 1. Na grafe \ref{obr:lms} je vidieť priebeh
 výpočtu váh v~čase.
 
 \begin{figure}[H]
@@ -408,7 +412,7 @@ výpočtu váh v~čase.
 
 \section{Záver}
 Na záver by som porovnal kvadratickú sumu chýb (\emph{SSE}) oboch modelov. Pre
-model \emph{ARIMA} vyšla chyba $3.377059*10^{17}$ a pre Holtovu metódu $3.657135*10^{17}$. 
+model \emph{ARIMA} vyšla chyba $3.377059*10^{17}$ a~pre Holtovu metódu $3.657135*10^{17}$. 
 Vidíme, že rozdiel nieje významne odlišný. Ak opticky porovnáme grafy \ref{obr:heap_forecast},
 \ref{obr:heap_holt} vidíme, že exponenciálne vyhladzovanie strmšie klesá.
 
@@ -418,13 +422,13 @@ voliť výpočetne nenáročný model, aby bolo možné spracovávať napríklad
 
 Výsledky adaptívnej filtrácie ukázali, že je možné vypočítať parametre \emph{AR} modelu
 pomocou jednoduchých algoritmov ako je napríklad \emph{LMS} ak máme dostatočne veľký počet
-pozorovaní. Kombináciou adaptívnej filtrácie a exponenciálneho vyhladzovania by sme mohli 
-dospieť k~zaujímavému modelu, ktorý by mohol mať dobré prediktívne vlastnosti a nízku
+pozorovaní. Kombináciou adaptívnej filtrácie a~exponenciálneho vyhladzovania by sme mohli 
+dospieť k~zaujímavému modelu, ktorý by mohol mať dobré prediktívne vlastnosti a~nízku
 výpočetnu náročnosť.
 
 \section*{Poďakovanie}
 Na záver by som chcel poďakovať Ing. Danielovi Němcovi, Ph.D. za návrh na vypracovanie
-tejto témy a za veľmi príjemné a užitočné konzultácie. Ďalej by som chcel poďakovať Ester
+tejto témy a~za veľmi príjemné a~užitočné konzultácie. Ďalej by som chcel poďakovať Ester
 Železňákovej za gramatickú korektúru textu.
 
 \bibliographystyle{czechiso}
